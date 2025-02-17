@@ -1,0 +1,38 @@
+name: Render R Markdown
+
+on:
+  push:
+    branches:
+      - main  # Run when pushing to main (adjust if needed)
+  pull_request:
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.2.0'  # Use the latest R version available
+
+      - name: Install Dependencies
+        run: |
+          Rscript -e 'install.packages(c("rmarkdown", "knitr"))'
+
+      - name: Render R Markdown
+        run: |
+          Rscript -e 'rmarkdown::render("climate-change-modeling.r.Rmd", output_format = "github_document")'
+
+      - name: Commit and Push Results
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git add -A
+          git commit -m 'Auto-rendered R Markdown' || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
