@@ -25,7 +25,7 @@ jobs:
 
       - name: Render R Markdown
         run: |
-          Rscript -e 'rmarkdown::render("climate-change-modeling.Rmd", output_format = "github_document")'
+          Rscript -e 'rmarkdown::render("climate_change_modeling.Rmd", output_format = "github_document")'
 
       - name: Commit and Push Results
         run: |
