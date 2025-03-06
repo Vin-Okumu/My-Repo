@@ -19,7 +19,8 @@ head(df) #Returns a glimpse of the data frame
 
 ```r
 library(dplyr) 
-df = df%>%arrange(Year) #Rearranges the data in the data frame by year
+df = df%>%
+  arrange(Year) #Rearranges the data in the data frame by year
 head(df)
 tail(df)
 ```
