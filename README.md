@@ -5,19 +5,19 @@ Over the past century, anthropogenic activities—such as fossil fuel combustion
 
 By leveraging climate models, this analysis aims to test six key hypotheses regarding the relationships between the four variables measured for this hypothetical dataset; CO₂ concentration, global average temperature, sea level rise, and Arctic ice area coverage. Understanding these interconnections through predictive modeling is crucial for informing climate mitigation and adaptation strategies, ensuring a data-driven approach to addressing climate change challenges.
 
-```{r}
+```r
 library (tidyverse)
 df = read.csv("D:/Analytics/Climate_Change/Climate_Change_Indicators.csv") #reads in the data frame 
 colnames(df) = c("Year","Global_Avg_Temp","CO2_Conc","Rise_in_Sea_Lvl","Arctic_Ice_Area") #renames the columns
 str(df) #Returns the summary of the data frame
 ```
-```{r}
+```r
 anyNA(df) #Checks for missing values, helps ensure there are no missing values within data frame
 head(df) #Returns a glimpse of the data frame
 ```
 # Rearranging Data
 
-```{r}
+```r
 library(dplyr) 
 df = df%>%arrange(Year) #Rearranges the data in the data frame by year
 head(df)
@@ -27,7 +27,7 @@ tail(df)
 
 Since the original data contains several readings per variable per year, it was logical to assume that the records stood for readings measured in different parts of the globe at different times of the year. Therefore, averaging them out gives a proper perspective of the estimated readings at any given time of the year or part of the globe as a mean reading.
 
-```{r}
+```r
 df = df %>%
   group_by(Year) %>%
   summarise(across(everything(),\(x)mean(x, na.rm = TRUE))) #calculates the mean readings for each year respectively
@@ -51,7 +51,7 @@ Effect on Correlation and Regression – Since we intend to check the associatio
 For this session, we are testing the data for normality using Shapiro-Wilk test, especially since we had already summarized the data to contain the mean readings for each year instead of the original repeated readings. Therefore, the resultant dataset contains records less than 5000.
 
 
-```{r}
+```r
 # Check normality using Shapiro-Wilk test
 for (col in c("Global_Avg_Temp", "CO2_Conc", "Rise_in_Sea_Lvl", "Arctic_Ice_Area")) {
   cat("\nShapiro-Wilk test for", col, "\n")
@@ -68,7 +68,7 @@ In cases where we fail to reject the null hypothesis (meaning the p_value is cal
 
 From the Shapiro-Wilk test results above, it is evident that the all variables are normally distributed as the respective p_values are greater than 0.05. Additionally, with each statistic closer to 1, it shows that the data are more normally distributed as will be proven by the following histogram plots.
 
-```{r}
+```r
 library(ggplot2)
 # Convert data to long format
 df_long <- pivot_longer(df, cols = c(Global_Avg_Temp, CO2_Conc, Rise_in_Sea_Lvl, Arctic_Ice_Area), 
@@ -100,7 +100,7 @@ With four variables measured in this dataset, and the underlying need for analys
 **Testing Correlation between CO₂ Concentration and Global Average Temperature**
 
 The first set of variables to be tested were atmospheric carbon dioxide (CO₂) concentration and global average temperature. The common assumption has always been that a rise in atmospheric carbon dioxide (CO₂) concentration leads to an increase in global average temperature, which is the resultant cause of global warming.
-```{r}
+```r
 ggplot(df,aes(x = CO2_Conc, y = Global_Avg_Temp)) +
   geom_point(pch = 15, color = "firebrick3", size = 1.5) +
   ggtitle("CO2 Concentration vs Global Average\nTemperature") +
@@ -120,7 +120,7 @@ ggplot(df,aes(x = CO2_Conc, y = Global_Avg_Temp)) +
 ```
 However, from the above plot, the underlying impication is that global average temperature is negatively correlated with CO₂ concentration. The above plot insinuates that as the CO₂ concentration increases, the global average temperature decreases. Therefore, to ascertain the given correlation, it would be logical to perform a correlation test. 
 
-```{r}
+```r
 #Performing pearson correlation test
 Corr_1 = cor.test(df$Global_Avg_Temp,df$CO2_Conc, method = "pearson")
 print(Corr_1)
@@ -142,7 +142,7 @@ For this analysis we tested correlation using Pearson Correlation test, which re
 
 The second set of variables to be tested were global average temperature and rise in sea level. Similar to the assumption asserted when looking at CO₂ concentration and Global average temperature, the assumption here is that a rise in global average temperature leads to a rise in sea level, which is the result of global warming.
 
-```{r}
+```r
 ggplot(df,aes(x = Global_Avg_Temp, y = Rise_in_Sea_Lvl)) +
   geom_point(pch = 8, color = "azure", size = 2) +
   ggtitle("Global Average Temperature vs Rise in Sea\nLevel") +
@@ -161,7 +161,7 @@ ggplot(df,aes(x = Global_Avg_Temp, y = Rise_in_Sea_Lvl)) +
 ```
 From the above plot, the common assumption is relatively supported, with the plot sublty implying that global average temperature is weakly positively correlated with rise in sea level. The above plot, therefore, insinuates that as the global average temperature increases, the sea level rises. However, to ascertain the given correlation, it would be logical, again, to perform a correlation test.  
 
-```{r}
+```r
 Corr_2 = cor.test(df$Global_Avg_Temp,df$Rise_in_Sea_Lvl, method = "pearson")
 print(Corr_2)
 
@@ -184,7 +184,7 @@ Similar to the previous test, we performed a Pearson Correlation test, which ret
 
 The third set of variables to be tested were global average temperature and arctic ice area. Similar to the previously asserted assumptions, the assumption here is that a rise in global average temperature leads to a decrease in arctic ice area as a result of ice melting.
 
-```{r}
+```r
 ggplot(df,aes(x = Global_Avg_Temp, y = Arctic_Ice_Area)) +
   geom_point(pch = 8, color = "darkblue", size = 2) +
   ggtitle("Global Average Temperature vs Arctic Ice Area") +
@@ -204,7 +204,7 @@ ggplot(df,aes(x = Global_Avg_Temp, y = Arctic_Ice_Area)) +
 ```
 However, from the above plot, the assumption is not suported as the plot sublty implies that global average temperature is weakly positively correlated with arctic ice area. The above plot, therefore, insinuates that as the global average temperature increases, the arctic ice area increases. Therefore, to ascertain the given correlation, it would be logical, again, to perform a correlation test. 
 
-```{r}
+```r
 Corr_3 = cor.test(df$Global_Avg_Temp,df$Arctic_Ice_Area, method = "pearson")
 print(Corr_3)
 
@@ -228,7 +228,7 @@ Similar to the previous tests, we performed a Pearson Correlation test, which re
 
 The fourth set of variables whose correlation was tested was CO₂ concentration and arctic ice area. Similar to the previously asserted assumptions, the assumption here is that an increase in CO₂ concentration leads to a decrease in arctic ice area as a result of ice melting from global warming.
 
-```{r}
+```r
 ggplot(df,aes(x = CO2_Conc, y = Arctic_Ice_Area)) +
   geom_point(pch = 17, color = "black", size = 2) +
   ggtitle("CO2 Concentration vs Arctic Ice Area") +
@@ -250,7 +250,7 @@ From the above plot, the common assumption is not supportted, with the plot subl
 
 
 
-```{r}
+```r
 Corr_4 = cor.test(df$CO2_Conc,df$Arctic_Ice_Area, method = "pearson")
 print(Corr_4)
 
@@ -273,7 +273,7 @@ Similar to the previous tests, results from the Pearson Correlation test implied
 
 The fifth set of variables to be tested were CO₂ concentration and rise in sea level. Here, the underlying assumption is always that an increase in CO₂ concentration leads to a rise in sea level as a result of ice melting from global warming.
 
-```{r}
+```r
 ggplot(df,aes(x = CO2_Conc, y = Rise_in_Sea_Lvl)) +
   geom_point(pch = 8, color = "darkgreen", size = 2) +
   ggtitle("CO2 Concentration vs Rise in Sea Level") +
@@ -292,7 +292,7 @@ ggplot(df,aes(x = CO2_Conc, y = Rise_in_Sea_Lvl)) +
 ```
 From the above plot, the common assumption is supportted, with the plot implying that CO2 concentration is positively correlated with rise in sea level. The above plot, therefore, insinuates that as the CO2 concentration increases, the sea level rises. However, again, to ascertain the given correlation, it would be logical to perform a correlation test. 
 
-```{r}
+```r
 Corr_5 = cor.test(df$CO2_Conc,df$Rise_in_Sea_Lvl, method = "pearson")
 print(Corr_5)
 
@@ -315,7 +315,7 @@ Like the previous tests, results from the Pearson Correlation test implied there
 
 The final set of variables to be tested were arctic ice area and rise in sea level. Here, the underlying assumption is always that a decrease in arctic ice area leads to a rise in sea level as a result of ice melting.
 
-```{r}
+```r
 ggplot(df,aes(x = Arctic_Ice_Area, y = Rise_in_Sea_Lvl)) +
   geom_point(pch = 18, color = "grey1", size = 3.5) +
   ggtitle("Arctic Ice Area vs Rise in Sea Level") +
@@ -334,7 +334,7 @@ ggplot(df,aes(x = Arctic_Ice_Area, y = Rise_in_Sea_Lvl)) +
 ```
 From the above plot, the common assumption is not supportted since the plot implies that arctic ice area is positively correlated with rise in sea level. The above plot, therefore, insinuates that as the arctic ice area increased the sea level rises. However, again, to ascertain the given correlation, it would be logical to perform a correlation test. 
 
-```{r}
+```r
 Corr_6 = cor.test(df$Arctic_Ice_Area,df$Rise_in_Sea_Lvl, method = "pearson")
 print(Corr_6)
 
